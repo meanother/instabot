@@ -1,5 +1,9 @@
 # instabot
 
+### Download chromedriver:
+https://chromedriver.chromium.org/downloads
+
+
 ### Initialize
 ```shell script
 cd $HOME ; \
@@ -12,6 +16,7 @@ echo "login='YOUR_LOGIN'\npassword='YOUR_PASSWORD'" > $HOME/instabot/service/set
 ```
 
 ### Settings
+Copy chromedriver to /service/
 Please enter the list of hashtags you need in the file: hashtags.txt  
 example:  
     vsco  
