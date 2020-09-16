@@ -16,9 +16,9 @@ echo "login='YOUR_LOGIN'\npassword='YOUR_PASSWORD'" > $HOME/instabot/service/set
 ```
 
 ### Settings
-Copy chromedriver to /service/
+Copy chromedriver to /service/  
 Please enter the list of hashtags you need in the file: hashtags.txt  
-example:  
+for example:  
     vsco  
     followme  
     art  

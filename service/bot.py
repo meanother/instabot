@@ -62,7 +62,7 @@ class Bot:
         time.sleep(2)
 
         final_href_array = []
-        for i in range(1, 3):
+        for i in range(1, 4):
             driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
             time.sleep(2)
             href_objects = driver.find_elements_by_tag_name('a')
@@ -76,9 +76,10 @@ class Bot:
             time.sleep(random.randint(2, 4))
             try:
                 driver.find_element_by_css_selector('svg[aria-label="Like"]').click()
-                time.sleep(55)
-            except (NoSuchElementException, ElementNotInteractableException):
-                time.sleep(10)
+                time.sleep(random.randint(40, 50))
+            except (NoSuchElementException, ElementNotInteractableException) as e:
+                log.error(f'Cant find "Like" on page, sleep 10 seconds\n{str(e) + traceback.format_exc()}')
+                time.sleep(random.randint(6, 15))
                 pass
 
 
