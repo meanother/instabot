@@ -3,7 +3,6 @@
 ### Download chromedriver:
 https://chromedriver.chromium.org/downloads
 
-
 ### Initialize
 ```shell script
 cd $HOME ; \
@@ -11,21 +10,23 @@ git clone https://github.com/meanother/instabot.git ; \
 cd instabot ; \
 python3 -m venv env ; \
 source env/bin/activate ; \
-pip install -r requirments.txt ; \
-echo "login='YOUR_LOGIN'\npassword='YOUR_PASSWORD'" > $HOME/instabot/service/settings.py
+pip install -r requirments.txt
 ```
-
-### Settings
-Copy chromedriver to /service/  
-Please enter the list of hashtags you need in the file: hashtags.txt  
-for example:  
-    vsco  
-    followme  
-    art  
+### example: HASHTAGS.TXT  
+vsco  
+заебись  
+nike  
+followme   
 
 
-### Run
+### Example run, change to your parameters
 ```shell script
-python $HOME/instabot/service/bot.py
+source $HOME/instabot/env/bin/activate/ ; \
+python $HOME/instabot/service/bot.py \
+--login="YOUR_LOGIN" \
+--password="YOUR_PASSWORD" \
+--path="PATH/TO/HASHTAGS.TXT" \
+--chromedriver="/usr/local/chromedriver" \
+--like="Like"
 ```
 

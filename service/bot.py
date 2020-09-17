@@ -1,3 +1,4 @@
+import argparse
 import logging
 import os
 import random
@@ -7,22 +8,24 @@ import traceback
 from selenium import webdriver
 from selenium.common.exceptions import NoSuchElementException, ElementNotInteractableException
 from selenium.webdriver.common.keys import Keys
-from settings import login, password
+# from settings import login, password
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 logging.basicConfig(
     level=logging.INFO,
-    format='%(asctime)s [%(levelname)s] %(name)s %(funcName)s %(process)d:%(processName)s %(message)s',
+    format='%(asctime)s [%(levelname)s] %(name)s %(funcName)s %(message)s',
 )
 log = logging.getLogger(__name__)
 
 
 class Bot:
-    def __init__(self, username, password):
+    def __init__(self, username, password, driver_path):
         self.username = username
         self.password = password
-        self.driver = webdriver.Chrome()
+        self.count = 0
+        self.driver_path = driver_path
+        self.driver = webdriver.Chrome(executable_path=self.driver_path)
 
     def close_browser(self):
         self.driver.close()
@@ -41,11 +44,11 @@ class Bot:
     def hello():
         log.info('Starting Bot')
         log.info('''
-            ____           __        ____        __     ____   ___        
-           /  _/___  _____/ /_____ _/ __ )____  / /_   / __ \ <  /  _   __
-           / // __ \/ ___/ __/ __ `/ __  / __ \/ __/  / / / / / /  | | / /
-         _/ // / / (__  ) /_/ /_/ / /_/ / /_/ / /_   / /_/ / / /   | |/ / 
-        /___/_/ /_/____/\__/\__,_/_____/\____/\__/   \____(_)_/    |___/  
+            ____           __        ____        __     ____   ___           
+           /  _/___  _____/ /_____ _/ __ )____  / /_   / __ \ |__ \    _   __
+           / // __ \/ ___/ __/ __ `/ __  / __ \/ __/  / / / / __/ /   | | / /
+         _/ // / / (__  ) /_/ /_/ / /_/ / /_/ / /_   / /_/ / / __/    | |/ / 
+        /___/_/ /_/____/\__/\__,_/_____/\____/\__/   \____(_)____/    |___/  
         ''')
 
     @staticmethod
@@ -55,7 +58,14 @@ class Bot:
         log.info(f'Bot settings:\n{data}\n-------------------------')
         return data
 
-    def like_photo(self, hashtag):
+    @staticmethod
+    def read_config_from_args(path):
+        with open(path, 'r') as file:
+            data = file.read().strip()
+        log.info(f'Bot settings:\n{data}\n-------------------------')
+        return data
+
+    def like_photo(self, hashtag, like):
         driver = self.driver
         time.sleep(5)
         driver.get("https://www.instagram.com/explore/tags/" + hashtag + "/")
@@ -75,24 +85,37 @@ class Bot:
             driver.get(pic_href)
             time.sleep(random.randint(2, 4))
             try:
-                driver.find_element_by_css_selector('svg[aria-label="Like"]').click()
+                driver.find_element_by_css_selector(f'svg[aria-label="{like}"]').click()
                 time.sleep(random.randint(40, 50))
+                self.count += 1
             except (NoSuchElementException, ElementNotInteractableException) as e:
                 log.error(f'Cant find "Like" on page, sleep 10 seconds\n{str(e) + traceback.format_exc()}')
                 time.sleep(random.randint(6, 15))
                 pass
+            log.info(f'Кол-во лайков за запуск = {self.count}')
 
 
 def main():
+    parser = argparse.ArgumentParser(description='InstaBot commands help')
+    parser.add_argument('-l', '--login', action="store", dest="login", type=str)
+    parser.add_argument('-p', '--password', action="store", dest="password", type=str)
+    parser.add_argument('-t', '--path', action="store", default='$HOME', type=str)
+    parser.add_argument('-c', '--chromedriver', action="store", type=str)
+    parser.add_argument('-g', '--like', action="store", default='Like', type=str)
+
+    args = parser.parse_args()
+
     Bot.hello()
-    config = Bot.read_config()
+    # config = Bot.read_config()
+    config = Bot.read_config_from_args(args.path)
+
     while True:
         try:
-            run = Bot(login, password)
+            run = Bot(args.login, args.password, args.chromedriver)
             run.login()
             for tag in config.split('\n'):
                 log.info(f'Current hashtag is #{tag}')
-                run.like_photo(tag)
+                run.like_photo(tag, args.like)
                 time.sleep(60)
         except Exception as e:
             log.error(str(e) + traceback.format_exc())
