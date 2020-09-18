@@ -86,11 +86,11 @@ class Bot:
             time.sleep(random.randint(2, 4))
             try:
                 driver.find_element_by_css_selector(f'svg[aria-label="{like}"]').click()
-                time.sleep(random.randint(40, 50))
+                time.sleep(random.randint(55, 75))
                 self.count += 1
             except (NoSuchElementException, ElementNotInteractableException) as e:
                 log.error(f'Cant find "Like" on page, sleep 10 seconds\n{str(e) + traceback.format_exc()}')
-                time.sleep(random.randint(6, 15))
+                time.sleep(random.randint(6, 20))
                 pass
             log.info(f'Кол-во лайков за запуск = {self.count}')
 
