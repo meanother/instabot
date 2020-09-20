@@ -1,5 +1,3 @@
-import argparse
-import logging
 import os
 import random
 import time
@@ -8,15 +6,7 @@ import traceback
 from selenium import webdriver
 from selenium.common.exceptions import NoSuchElementException, ElementNotInteractableException
 from selenium.webdriver.common.keys import Keys
-# from settings import login, password
-
-BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-
-logging.basicConfig(
-    level=logging.INFO,
-    format='%(asctime)s [%(levelname)s] %(name)s %(funcName)s %(message)s',
-)
-log = logging.getLogger(__name__)
+from .utils import log, BASE_DIR
 
 
 class Bot:
@@ -95,33 +85,4 @@ class Bot:
             log.info(f'Кол-во лайков за запуск = {self.count}')
 
 
-def main():
-    parser = argparse.ArgumentParser(description='InstaBot commands help')
-    parser.add_argument('-l', '--login', action="store", dest="login", type=str)
-    parser.add_argument('-p', '--password', action="store", dest="password", type=str)
-    parser.add_argument('-t', '--path', action="store", default='$HOME', type=str)
-    parser.add_argument('-c', '--chromedriver', action="store", type=str)
-    parser.add_argument('-g', '--like', action="store", default='Like', type=str)
 
-    args = parser.parse_args()
-
-    Bot.hello()
-    # config = Bot.read_config()
-    config = Bot.read_config_from_args(args.path)
-
-    while True:
-        try:
-            run = Bot(args.login, args.password, args.chromedriver)
-            run.login()
-            for tag in config.split('\n'):
-                log.info(f'Current hashtag is #{tag}')
-                run.like_photo(tag, args.like)
-                time.sleep(60)
-        except Exception as e:
-            log.error(str(e) + traceback.format_exc())
-            time.sleep(120)
-            log.info('Sleep 2 min after ERROR')
-
-
-if __name__ == "__main__":
-    main()

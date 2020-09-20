@@ -21,12 +21,12 @@ followme
 
 ### Example run, change to your parameters
 ```shell script
-source $HOME/instabot/env/bin/activate/ ; \
-python $HOME/instabot/service/bot.py \
+source $HOME/instabot/env/bin/activate ; \
+python $HOME/instabot/run.py \
 --login="YOUR_LOGIN" \
 --password="YOUR_PASSWORD" \
---path="PATH/TO/HASHTAGS.TXT" \
---chromedriver="/usr/local/chromedriver" \
+--path="/path/to/tags.txt" \
+--chromedriver="/path/to/chromedriver" \
 --like="Like"
 ```
 
