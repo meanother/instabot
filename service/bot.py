@@ -83,6 +83,3 @@ class Bot:
                 time.sleep(random.randint(6, 20))
                 pass
             log.info(f'Кол-во лайков за запуск = {self.count}')
-
-
-
