@@ -1,15 +1,11 @@
-import logging
+from loguru import logger as log
 import os
 import argparse
 
+log.add('service-bot.log', format='{time} [{level}] {module} {name} {function} - {message}',
+                 level='INFO', compression='tar.gz', rotation='3 KB')
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-
-logging.basicConfig(
-    level=logging.INFO,
-    format='%(asctime)s [%(levelname)s] %(name)s %(funcName)s - %(message)s',
-)
-log = logging.getLogger(__name__)
 
 
 def create_parser():
