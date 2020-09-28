@@ -17,7 +17,7 @@ def main():
             bot.login()
             for tag in config.split('\n'):
                 log.info(f'Current hashtag is #{tag}')
-                bot.like_photo(tag, args.like)
+                bot.collect_actions(tag, args.like)
                 time.sleep(60)
         except Exception as e:
             log.error(str(e) + traceback.format_exc())

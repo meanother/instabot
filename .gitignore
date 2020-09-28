@@ -6,6 +6,8 @@ service/test_agr.py
 chromedriver
 tags.txt
 *.log
+*.gz
+*.zip
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]

@@ -55,31 +55,43 @@ class Bot:
         log.info(f'Bot settings:\n{data}\n-------------------------')
         return data
 
-    def like_photo(self, hashtag, like):
+    def _click_like_btn(self, like):
+        try:
+            self.driver.find_element_by_css_selector(f'svg[aria-label="{like}"]').click()
+            time.sleep(random.randint(55, 75))
+            self.count += 1
+        except (NoSuchElementException, ElementNotInteractableException) as e:
+            log.error(f'Cant find "Like" on page, sleep 10 seconds\n{str(e) + traceback.format_exc()}')
+            time.sleep(random.randint(6, 20))
+            pass
+
+    def _discover_tag(self, hashtag):
         driver = self.driver
         time.sleep(5)
         driver.get("https://www.instagram.com/explore/tags/" + hashtag + "/")
         time.sleep(2)
 
+    def _get_photo_array(self) -> list:
         final_href_array = []
         for i in range(1, 4):
-            driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
+            self.driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
             time.sleep(2)
-            href_objects = driver.find_elements_by_tag_name('a')
+            href_objects = self.driver.find_elements_by_tag_name('a')
             photo_href = [elem.get_attribute('href') for elem in href_objects if
                           '.com/p/' in elem.get_attribute('href')]
             [final_href_array.append(href) for href in photo_href if href not in final_href_array]
+        return final_href_array
 
-        for pic_href in final_href_array:
-            log.info(f'Current parsed url is: {pic_href}')
-            driver.get(pic_href)
+    def collect_actions(self, hashtag, like):
+        self._discover_tag(hashtag)
+        array = self._get_photo_array()
+        for item in array:
+            log.info(f'Current parsed url is: {item}')
+            self.driver.get(item)
             time.sleep(random.randint(2, 4))
-            try:
-                driver.find_element_by_css_selector(f'svg[aria-label="{like}"]').click()
-                time.sleep(random.randint(55, 75))
-                self.count += 1
-            except (NoSuchElementException, ElementNotInteractableException) as e:
-                log.error(f'Cant find "Like" on page, sleep 10 seconds\n{str(e) + traceback.format_exc()}')
-                time.sleep(random.randint(6, 20))
-                pass
+            self._click_like_btn(like)
             log.info(f'Кол-во лайков за запуск = {self.count}')
+            if self.count % 25 == 0:
+                log.info('Count likes are multiples 25, program sleep 1800 seconds [30 minutes]')
+                time.sleep(1800)
+

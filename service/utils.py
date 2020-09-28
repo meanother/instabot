@@ -3,7 +3,7 @@ import os
 import argparse
 
 log.add('service-bot.log', format='{time} [{level}] {module} {name} {function} - {message}',
-                 level='INFO', compression='tar.gz', rotation='3 KB')
+                 level='INFO', compression='zip', rotation='10 MB')
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
