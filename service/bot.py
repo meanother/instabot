@@ -17,10 +17,10 @@ class Bot:
         self.driver_path = driver_path
         self.driver = webdriver.Chrome(executable_path=self.driver_path)
 
-    def close_browser(self):
+    def close_browser(self) -> None:
         self.driver.close()
 
-    def login(self):
+    def login(self) -> None:
         driver = self.driver
         driver.get("https://www.instagram.com/accounts/login/")
         time.sleep(2)
@@ -31,7 +31,7 @@ class Bot:
         time.sleep(2)
 
     @staticmethod
-    def hello():
+    def hello() -> None:
         log.info('Starting Bot')
         log.info('''
             ____           __        ____        __     ____   ___           
@@ -42,20 +42,20 @@ class Bot:
         ''')
 
     @staticmethod
-    def read_config():
+    def read_config() -> str:
         with open(os.path.join(BASE_DIR, 'hashtags.txt'), 'r') as file:
             data = file.read().strip()
         log.info(f'Bot settings:\n{data}\n-------------------------')
         return data
 
     @staticmethod
-    def read_config_from_args(path):
+    def read_config_from_args(path: str) -> str:
         with open(path, 'r') as file:
             data = file.read().strip()
         log.info(f'Bot settings:\n{data}\n-------------------------')
         return data
 
-    def _click_like_btn(self, like):
+    def _click_like_btn(self, like: str) -> None:
         try:
             self.driver.find_element_by_css_selector(f'svg[aria-label="{like}"]').click()
             time.sleep(random.randint(55, 75))
@@ -65,7 +65,7 @@ class Bot:
             time.sleep(random.randint(6, 20))
             pass
 
-    def _discover_tag(self, hashtag):
+    def _discover_tag(self, hashtag) -> None:
         driver = self.driver
         time.sleep(5)
         driver.get("https://www.instagram.com/explore/tags/" + hashtag + "/")
@@ -82,7 +82,7 @@ class Bot:
             [final_href_array.append(href) for href in photo_href if href not in final_href_array]
         return final_href_array
 
-    def collect_actions(self, hashtag, like):
+    def collect_actions(self, hashtag: str, like: str) -> None:
         self._discover_tag(hashtag)
         array = self._get_photo_array()
         for item in array:

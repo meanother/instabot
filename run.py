@@ -6,8 +6,6 @@ import traceback
 
 
 def main():
-    # TODO Добавить ограничения для лайков новых аккаунтов, 25лайков/час или 300лайков/сутки
-    # https://socialkit.ru/blog/post/limity-instagram-2020
     while True:
         args = create_parser()
         bot = Bot(args.login, args.password, args.chromedriver)

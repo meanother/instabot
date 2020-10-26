@@ -8,7 +8,7 @@ log.add('service-bot.log', format='{time} [{level}] {module} {name} {function} -
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 
-def create_parser():
+def create_parser() -> str:
     parser = argparse.ArgumentParser(description='InstaBot commands help')
     parser.add_argument('-l', '--login', action="store", dest="login", type=str)
     parser.add_argument('-p', '--password', action="store", dest="password", type=str)
