@@ -58,7 +58,7 @@ class Bot:
     def _click_like_btn(self, like: str) -> None:
         try:
             self.driver.find_element_by_css_selector(f'svg[aria-label="{like}"]').click()
-            time.sleep(random.randint(55, 75))
+            time.sleep(random.randint(5, 15))
             self.count += 1
         except (NoSuchElementException, ElementNotInteractableException) as e:
             log.error(f'Cant find "Like" on page, sleep 10 seconds\n{str(e) + traceback.format_exc()}')
@@ -91,7 +91,7 @@ class Bot:
             time.sleep(random.randint(2, 4))
             self._click_like_btn(like)
             log.info(f'Кол-во лайков за запуск = {self.count}')
-            if self.count % 25 == 0:
-                log.info('Count likes are multiples 25, program sleep 1800 seconds [30 minutes]')
-                time.sleep(1800)
+            #if self.count % 25 == 0:
+            #    log.info('Count likes are multiples 25, program sleep 1800 seconds [30 minutes]')
+            #    time.sleep(1800)
 

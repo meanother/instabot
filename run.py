@@ -16,7 +16,7 @@ def main():
             for tag in config.split('\n'):
                 log.info(f'Current hashtag is #{tag}')
                 bot.collect_actions(tag, args.like)
-                time.sleep(60)
+                time.sleep(15)
         except Exception as e:
             log.error(str(e) + traceback.format_exc())
             time.sleep(120)
