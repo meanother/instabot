@@ -1,10 +1,12 @@
 #my temp files
 service/test_agr.py
+service/take_data.py
 
 
 # manual
 chromedriver
 tags.txt
+*.html
 *.log
 *.gz
 *.zip

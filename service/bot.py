@@ -1,12 +1,18 @@
 import os
 import random
+import re
 import time
 import traceback
 
 from selenium import webdriver
-from selenium.common.exceptions import NoSuchElementException, ElementNotInteractableException
+from selenium.common.exceptions import (
+    NoSuchElementException,
+    ElementNotInteractableException,
+    ElementClickInterceptedException
+)
 from selenium.webdriver.common.keys import Keys
 from .utils import log, BASE_DIR
+from bs4 import BeautifulSoup as bs
 
 
 class Bot:
@@ -57,13 +63,58 @@ class Bot:
 
     def _click_like_btn(self, like: str) -> None:
         try:
-            self.driver.find_element_by_css_selector(f'svg[aria-label="{like}"]').click()
-            time.sleep(random.randint(5, 15))
-            self.count += 1
+            btn = self.driver.find_element_by_css_selector(f'svg[aria-label="{like}"]')
+            log.info(f'Height of like button: {btn.get_attribute("height")}')
+            if btn.get_attribute("height") == '24':
+                btn.click()
+                time.sleep(random.randint(5, 15))
+                self.count += 1
+            time.sleep(random.randint(1, 4))
         except (NoSuchElementException, ElementNotInteractableException) as e:
-            log.error(f'Cant find "Like" on page, sleep 10 seconds\n{str(e) + traceback.format_exc()}')
-            time.sleep(random.randint(6, 20))
-            pass
+            log.error(f'Cant find "Like" on page, sleep 10 seconds {str(e) + traceback.format_exc()}')
+        except ElementClickInterceptedException as e:
+            log.error(f'the element finds off-screen {str(e) + traceback.format_exc()}')
+
+    def _count_likes_comments(self) -> dict:
+        html = self._html_tree()
+        try:
+            for element in html.find_all('meta'):
+                if element.get('content') is not None and 'Comments' in str(element.get('content')):
+                    string = element.get('content')
+                    log.warning(string)
+                    value = re.match(r'(\d+.Likes)\W+(\d+.Comments)', string.replace(',', '')).groups()
+                    likes = int(value[0][:-6])
+                    comments = int(value[1][:-8])
+                    data = {'like': likes, 'comment': comments}
+                    log.info(f'Counts: {str(data)}')
+                    return data
+        except (TypeError, AttributeError):
+            log.error('Could not be found meta information with like/comment on the page, try to get info with driver')
+            count = self.driver.find_element_by_xpath('//*[@id="react-root"]/section/main/div/div[1]/article/div[3]/section[2]/div/div')
+            likes = int(count.text.strip()[:-6].replace(',', ''))
+            return {'like': likes, 'comment': 5}
+
+    def _html_tree(self):
+        data = self.driver.page_source
+        soup = bs(data, 'lxml')
+        return soup
+
+    def get_html_page(self) -> None:
+        soup = self._html_tree()
+        for element in soup.find_all('meta'):
+            # if element.get('content') is not None and 'Comments' in str(element.get('content')):
+            #     item = element.get('content')
+            #     re_item = re.match(r'(\d+.Likes)\W+(\d+.Comments)', item).groups()
+            #     log.info(item)
+            #     log.info(re_item[0][:-6])
+            #     log.info(re_item[1][:-8])
+            if element.get('property') == 'instapp:hashtags':
+                item = element.get('content')
+                log.info(item)
+
+    def get_description_post(self) -> None:
+        data = self.driver.find_element_by_xpath('//*[@id="react-root"]/section/main/div/div[1]/article/div[3]/div[1]/ul/div/li/div/div/div[2]/span')
+        log.info(f'Description: {str(data.text.strip())}')
 
     def _discover_tag(self, hashtag) -> None:
         driver = self.driver
@@ -87,9 +138,17 @@ class Bot:
         array = self._get_photo_array()
         for item in array:
             log.info(f'Current parsed url is: {item}')
-            self.driver.get(item)
-            time.sleep(random.randint(2, 4))
-            self._click_like_btn(like)
+            self.driver.get(item+'?hl=en')
+            time.sleep(random.randint(3, 5))
+            self.get_description_post()
+            self.get_html_page()
+            try:
+                counts = self._count_likes_comments()
+                if counts['like'] > 40 and counts['comment'] > 2:
+                    self._click_like_btn(like)
+            except TypeError:
+                # TODO: Убрать это исключение
+                pass
             log.info(f'Кол-во лайков за запуск = {self.count}')
             #if self.count % 25 == 0:
             #    log.info('Count likes are multiples 25, program sleep 1800 seconds [30 minutes]')
